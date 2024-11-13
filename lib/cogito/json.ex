@@ -2,7 +2,7 @@ defmodule Cogito.Json do
   import Cogito.Combinators
   import Cogito.Primitives
 
-  def iterable(left, parser, right) do
+  defp iterable(left, parser, right) do
     [
       string(left),
       [
@@ -33,7 +33,7 @@ defmodule Cogito.Json do
     iterable("[", fn -> value() end, "]")
   end
 
-  def entry() do
+  defp entry() do
     [
       identifier(),
       ws(),

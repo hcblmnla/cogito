@@ -18,7 +18,7 @@ defmodule Cogito.Combinators do
   def char(predicate) when is_function(predicate, 1) do
     fn
       <<head, tail::bitstring>> -> bitchar(predicate, head, tail)
-      "" -> {:err, :unexpected_eof}
+      "" -> {:err, :unexpected_eos}
       _input -> {:err, :invalid_input}
     end
   end
@@ -103,7 +103,7 @@ defmodule Cogito.Combinators do
     fn input ->
       case parser.(input) do
         {:ok, parsed, ""} -> {:ok, parsed}
-        {:ok, _, tail} -> {:err, :expected_eof, tail}
+        {:ok, _, tail} -> {:err, :expected_eos, tail}
         err -> err
       end
     end
