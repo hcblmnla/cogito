@@ -33,3 +33,6 @@ cogito-*.tar
 
 # VS code files.
 /.elixir_ls/
+
+# Playground file.
+/lib/playground.ex
