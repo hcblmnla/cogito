@@ -51,7 +51,9 @@ defmodule Cogito.Json do
         %{}
 
       entries ->
-        Enum.reduce(entries, %{}, fn [key, value], acc ->
+        entries
+        |> Enum.reverse()
+        |> Enum.reduce(%{}, fn [key, value], acc ->
           Map.put(acc, key, value)
         end)
     end)

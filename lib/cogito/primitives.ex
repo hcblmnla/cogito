@@ -94,7 +94,7 @@ defmodule Cogito.Primitives do
   def string() do
     [
       char(@quote_char),
-      exclude([@quote_char]) |> repeat() |> join(),
+      exclude([@quote_char]) |> some() |> join(),
       char(@quote_char)
     ]
     |> nth(1)
