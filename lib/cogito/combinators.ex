@@ -103,7 +103,7 @@ defmodule Cogito.Combinators do
     fn input ->
       case parser.(input) do
         {:ok, parsed, ""} -> {:ok, parsed}
-        {:ok, _, tail} -> {:err, :expected_eos, tail}
+        {:ok, _, tail} -> {:err, {:expected_eos, tail}}
         err -> err
       end
     end
