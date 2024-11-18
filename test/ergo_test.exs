@@ -8,6 +8,15 @@ defmodule CogitoTest do
     end
   end
 
+  defp checker_err(parser) do
+    fn input ->
+      case Cogito.parse(parser, input) do
+        {:err, reason} -> IO.puts("Input: \"#{input}\", reason: #{inspect(reason)}")
+        _ -> raise("Expected error: #{input}")
+      end
+    end
+  end
+
   # TODO: json err and extract JsonTest module
 
   test "json values" do
@@ -72,5 +81,26 @@ defmodule CogitoTest do
     ok.("    \n\t 100 \n\n", 100)
     ok.("  [ \t\t1,2,   3\n]", [1, 2, 3])
     ok.("[{},      \"abc\"]\n\n", [%{}, "abc"])
+  end
+
+  test "json err" do
+    json_parser = Cogito.Json.parser()
+    err = checker_err(json_parser)
+
+    err.("")
+    err.("[]]")
+    err.("[null, nul]")
+    err.("100.1")
+    err.("1 2 3 4")
+    err.("abc")
+
+    err.("{a:[10, 11, 12]]}")
+    err.("[100[")
+    err.("[[~]]")
+    err.("\"string\"~")
+
+    err.("[1, {a: \"hello, b: [1, 2, 3]}, null]")
+    err.("[1, {a: \"hello\", b: [1, 2, 3]} null]")
+    err.("[1, {a: \"hello\", b: [1, 2, 3]}, null~")
   end
 end
