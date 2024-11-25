@@ -2,7 +2,7 @@
 
 A very simple parser combinator that supports exception handling and includes examples of basic parsers
 
-Inspired by @kgeorgiy's parsers on Clojure
+Inspired by [@kgeorgiy](https://github.com/kgeorgiy)'s parsers on Clojure
 
 ### Installation
 
