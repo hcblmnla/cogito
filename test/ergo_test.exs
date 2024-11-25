@@ -17,8 +17,6 @@ defmodule CogitoTest do
     end
   end
 
-  # TODO: json err and extract JsonTest module
-
   test "json values" do
     json_parser = Cogito.Json.parser()
     ok = checker_ok(json_parser)

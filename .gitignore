@@ -36,3 +36,6 @@ cogito-*.tar
 
 # Playground file.
 /lib/playground.ex
+
+# Lock (mix) file.
+mix.lock

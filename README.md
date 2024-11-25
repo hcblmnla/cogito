@@ -1,11 +1,12 @@
 ## Cogito
 
-TODO: Add description
+A very simple parser combinator that supports exception handling and includes examples of basic parsers
+
+Inspired by @kgeorgiy's parsers on Clojure
 
 ### Installation
 
-WIP: If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `cogito` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `cogito` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
