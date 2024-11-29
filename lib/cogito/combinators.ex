@@ -1,6 +1,4 @@
 defmodule Cogito.Combinators do
-  alias Cogito.Lazy
-
   def identity(value) do
     fn input ->
       {:ok, value, input}
@@ -38,9 +36,9 @@ defmodule Cogito.Combinators do
 
   def concat(parser, parser2, function) do
     fn input ->
-      case Lazy.get(parser).(input) do
+      case parser.(input) do
         {:ok, head, tail} ->
-          case Lazy.get(parser2).(tail) do
+          case parser2.(tail) do
             {:ok, head2, tail2} ->
               {:ok, function.(head, head2), tail2}
 
@@ -62,9 +60,9 @@ defmodule Cogito.Combinators do
 
   def choice(parser, parser2) do
     fn input ->
-      case Lazy.get(parser).(input) do
+      case parser.(input) do
         {:err, reason} ->
-          case Lazy.get(parser2).(input) do
+          case parser2.(input) do
             {:err, reason2} ->
               if error_pos(reason) > error_pos(reason2) do
                 {:err, reason}
@@ -138,4 +136,12 @@ defmodule Cogito.Combinators do
   def repeat(parser, n), do: sequence(List.duplicate(parser, n))
 
   def join(parser), do: map(parser, &Enum.join/1)
+
+  defmacro lazy(parser) do
+    quote do
+      fn input ->
+        unquote(parser).(input)
+      end
+    end
+  end
 end

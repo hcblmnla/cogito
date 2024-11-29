@@ -2,6 +2,8 @@ defmodule Cogito.Json do
   import Cogito.Combinators
   import Cogito.Primitives
 
+  require Cogito.Combinators
+
   defp iterable(left, parser, right) do
     [
       string(left),
@@ -30,7 +32,7 @@ defmodule Cogito.Json do
   end
 
   defp array() do
-    iterable("[", fn -> value() end, "]")
+    iterable("[", lazy(value()), "]")
   end
 
   defp entry() do
@@ -39,7 +41,7 @@ defmodule Cogito.Json do
       ws(),
       char(?:) |> ignore(),
       ws(),
-      fn -> value() end
+      lazy(value())
     ]
     |> sequence()
   end
