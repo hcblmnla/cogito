@@ -32,7 +32,7 @@ defmodule Cogito.Json do
   end
 
   defp array() do
-    iterable("[", lazy(value()), "]")
+    iterable("[", value() |> lazy(), "]")
   end
 
   defp entry() do
@@ -41,7 +41,7 @@ defmodule Cogito.Json do
       ws(),
       char(?:) |> ignore(),
       ws(),
-      lazy(value())
+      value() |> lazy()
     ]
     |> sequence()
   end

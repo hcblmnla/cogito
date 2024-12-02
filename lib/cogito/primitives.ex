@@ -86,7 +86,7 @@ defmodule Cogito.Primitives do
       |> sequence()
       |> optional()
     ]
-    |> sequence()
+    |> sequence(&List.flatten/1)
     |> join()
     |> map(parse_numeric(&Float.parse/1))
   end
