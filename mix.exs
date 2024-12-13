@@ -4,7 +4,7 @@ defmodule Cogito.MixProject do
   def project do
     [
       app: :cogito,
-      version: "0.1.2",
+      version: "0.2.0",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -26,7 +26,7 @@ defmodule Cogito.MixProject do
   end
 
   defp description() do
-    "A very simple parser combinator"
+    "An extremely lightweight and simple parser combinator on pure Elixir"
   end
 
   defp package() do

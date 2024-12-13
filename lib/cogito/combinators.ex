@@ -1,9 +1,35 @@
 defmodule Cogito.Combinators do
-  def identity(value) do
-    fn input ->
-      {:ok, value, input}
-    end
-  end
+  @moduledoc """
+  A list of basic combinators.
+
+  ## Combinators
+
+  * identity
+  * char [predicate]
+  * char [code]
+
+  * map
+  * concat
+  * either
+
+  * star
+  * plus
+
+  * seq
+  * fseq
+  * nth
+  * repeat
+
+  * choice
+  * optional
+
+  * join
+  * ignore
+  * eos
+  * lazy
+  """
+
+  def identity(value), do: &{:ok, value, &1}
 
   defp bitchar(predicate, code, tail) do
     if predicate.(code) do
@@ -21,9 +47,7 @@ defmodule Cogito.Combinators do
     end
   end
 
-  def char(code) do
-    char(fn ch -> ch == code end)
-  end
+  def char(code), do: char(&(&1 == code))
 
   def map(parser, function) do
     fn input ->
@@ -58,7 +82,7 @@ defmodule Cogito.Combinators do
   defp error_pos({_, _, pos}), do: pos
   defp error_pos(_), do: -1
 
-  def choice(parser, parser2) do
+  def either(parser, parser2) do
     fn input ->
       case parser.(input) do
         {:err, reason} ->
@@ -80,36 +104,20 @@ defmodule Cogito.Combinators do
     end
   end
 
-  defp some(_parser, "", acc) do
-    {:ok, Enum.reverse(acc), ""}
-  end
+  defp do_star(_parser, "", acc), do: {:ok, Enum.reverse(acc), ""}
 
-  defp some(parser, input, acc) do
+  defp do_star(parser, input, acc) do
     case parser.(input) do
-      {:ok, parsed, tail} -> some(parser, tail, [parsed | acc])
+      {:ok, parsed, tail} -> do_star(parser, tail, [parsed | acc])
       _err -> {:ok, Enum.reverse(acc), input}
     end
   end
 
-  def some(parser) do
-    fn input ->
-      some(parser, input, [])
-    end
-  end
+  def star(parser), do: &do_star(parser, &1, [])
 
-  def eos(parser) do
-    fn input ->
-      case parser.(input) do
-        {:ok, parsed, ""} -> {:ok, parsed}
-        {:ok, _, tail} -> {:err, {:expected_eos, tail}}
-        err -> err
-      end
-    end
-  end
+  def plus(parser), do: concat(parser, star(parser), &[&1 | &2])
 
-  def ignore(parser), do: map(parser, fn _ -> :ignore end)
-
-  def sequence(parsers) do
+  def seq(parsers) do
     parsers
     |> Enum.reverse()
     |> Enum.reduce(identity([]), fn parser, acc ->
@@ -123,19 +131,29 @@ defmodule Cogito.Combinators do
     end)
   end
 
-  def sequence(parsers, function), do: map(sequence(parsers), function)
+  def fseq(parsers, function), do: map(seq(parsers), function)
 
-  def nth(parsers, n), do: sequence(parsers, &Enum.at(&1, n))
+  def nth(parsers, n), do: fseq(parsers, &Enum.at(&1, n))
 
-  def choice(parsers), do: Enum.reduce(parsers, &choice/2)
+  def repeat(parser, n), do: seq(List.duplicate(parser, n))
 
-  def optional(parser), do: choice(parser, identity(nil))
+  def choice(parsers), do: Enum.reduce(parsers, &either/2)
 
-  def repeat(parser), do: concat(parser, some(parser), &[&1 | &2])
-
-  def repeat(parser, n), do: sequence(List.duplicate(parser, n))
+  def optional(parser), do: either(parser, identity(nil))
 
   def join(parser), do: map(parser, &Enum.join/1)
+
+  def ignore(parser), do: map(parser, fn _ -> :ignore end)
+
+  def eos(parser) do
+    fn input ->
+      case parser.(input) do
+        {:ok, parsed, ""} -> {:ok, parsed}
+        {:ok, _, tail} -> {:err, {:expected_eos, tail}}
+        err -> err
+      end
+    end
+  end
 
   defmacro lazy(parser) do
     quote do

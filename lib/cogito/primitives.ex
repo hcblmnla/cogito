@@ -1,59 +1,67 @@
 defmodule Cogito.Primitives do
+  @moduledoc """
+  A list of primitive parsers.
+
+  ## Parsers
+
+  * chars
+  * not_chars
+  * word
+
+  * space
+  * ws
+
+  * digit
+  * natural
+  * integer
+  * float
+
+  * letter
+  * letter_or_digit
+  * identifier
+
+  * wrapped
+  * iterable
+  """
+
   import Cogito.Combinators
 
-  @quote_char ?"
-
-  def include(codes) when is_list(codes) do
-    char(fn ch -> ch in codes end)
-  end
-
-  def include(string) when is_bitstring(string) do
+  defp codes(string) do
     string
     |> String.codepoints()
     |> Enum.map(fn <<code>> -> code end)
-    |> include()
   end
 
-  def include(range) do
-    Enum.to_list(range) |> include()
-  end
+  def chars(codes) when is_list(codes), do: char(&(&1 in codes))
 
-  def exclude(codes) when is_list(codes) do
-    char(fn ch -> ch not in codes end)
-  end
-
-  # NOTE: copy-paste
-  def string(string) do
+  def chars(string) when is_bitstring(string) do
     string
-    |> String.codepoints()
-    |> Enum.map(fn <<code>> -> code end)
+    |> codes()
+    |> chars()
+  end
+
+  def chars(range), do: range |> Enum.to_list() |> chars()
+
+  def not_chars(string), do: char(&(&1 not in codes(string)))
+
+  def word(string) do
+    string
+    |> codes()
     |> Enum.map(&char/1)
-    |> sequence()
+    |> seq()
   end
 
-  def space() do
-    include([?\s, ?\t, ?\n, ?\r, ?\v])
-  end
+  def space(), do: chars([?\s, ?\t, ?\n, ?\r, ?\v])
 
-  def ws() do
-    space()
-    |> some()
-    |> ignore()
-  end
+  def ws(), do: space() |> star() |> ignore()
 
-  def digit() do
-    include(?0..?9)
-  end
+  def digit(), do: chars(?0..?9)
 
-  def digits() do
-    digit() |> repeat()
-  end
+  def natural(), do: digit() |> plus()
 
-  defp sign() do
-    include("+-") |> optional()
-  end
+  defp sign(), do: chars("+-") |> optional()
 
-  defp parse_numeric(parser) do
+  defp parse_number(parser) do
     fn string ->
       case parser.(string) do
         {parsed, _} -> parsed
@@ -65,59 +73,78 @@ defmodule Cogito.Primitives do
   def integer() do
     [
       sign(),
-      digits()
+      natural()
     ]
-    |> sequence()
+    |> seq()
     |> join()
-    |> map(parse_numeric(&Integer.parse/1))
+    |> map(parse_number(&Integer.parse/1))
   end
 
   def float() do
     [
       [
         sign(),
-        digits()
+        natural()
       ]
-      |> sequence(),
+      |> seq(),
       [
         char(?.),
-        digit() |> repeat()
+        digit() |> star()
       ]
-      |> sequence()
+      |> seq()
       |> optional()
     ]
-    |> sequence(&List.flatten/1)
+    |> fseq(&List.flatten/1)
     |> join()
-    |> map(parse_numeric(&Float.parse/1))
+    |> map(parse_number(&Float.parse/1))
   end
 
-  def string() do
-    [
-      char(@quote_char),
-      exclude([@quote_char]) |> some() |> join(),
-      char(@quote_char)
-    ]
-    |> nth(1)
-  end
+  def letter(), do: Enum.concat(?a..?z, ?A..?Z) |> chars()
 
-  def letter() do
-    Enum.concat(?a..?z, ?A..?Z) |> include()
-  end
-
-  def letter_or_digit() do
-    letter() |> choice(digit())
-  end
+  def letter_or_digit(), do: letter() |> either(digit())
 
   def identifier() do
     [
       letter(),
-      letter_or_digit() |> some()
+      letter_or_digit() |> star()
     ]
-    |> sequence()
+    |> seq()
     |> join()
   end
 
-  def null() do
-    string("null") |> map(fn _ -> nil end)
+  def wrapped(parser, left, right) do
+    [
+      word(left),
+      parser,
+      word(right)
+    ]
+    |> nth(1)
+  end
+
+  def iterable(parser, left, right, delimiter) do
+    [
+      word(left),
+      [
+        ws(),
+        parser,
+        [
+          ws(),
+          word(delimiter),
+          ws(),
+          parser
+        ]
+        |> nth(1)
+        |> star()
+      ]
+      |> fseq(fn [h, t] -> [h | t] end)
+      |> optional(),
+      ws(),
+      word(right)
+    ]
+    |> nth(1)
+    |> map(fn
+      nil -> []
+      it -> it
+    end)
   end
 end
