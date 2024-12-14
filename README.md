@@ -1,7 +1,6 @@
 ## Cogito
 
-A very simple parser combinator that supports exception handling and includes examples of basic parsers.
-Inspired by [@kgeorgiy](https://github.com/kgeorgiy)'s parsers on Clojure
+An extremely lightweight parser combinator on pure Elixir
 
 ### Installation
 
@@ -10,7 +9,7 @@ The package can be installed by adding `cogito` to your list of dependencies in 
 ```elixir
 def deps do
   [
-    {:cogito, "~> 0.1.2"}
+    {:cogito, "~> 0.2.0"}
   ]
 end
 ```
