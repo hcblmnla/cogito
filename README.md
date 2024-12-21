@@ -9,7 +9,7 @@ The package can be installed by adding `cogito` to your list of dependencies in 
 ```elixir
 def deps do
   [
-    {:cogito, "~> 0.2.1"}
+    {:cogito, "~> 0.2.2"}
   ]
 end
 ```
