@@ -4,24 +4,23 @@ defmodule Cogito.Combinators do
 
   ## Combinators
 
-  * identity
-  * char [predicate]
-  * char [code]
-  * map
-  * concat
-  * either
-  * star
-  * plus
-  * seq
-  * fseq
-  * nth
-  * repeat
-  * choice
-  * optional
-  * join
-  * ignore
-  * eos
-  * lazy
+  * **`identity`**
+  * **`char`**
+  * **`map`**
+  * **`concat`**
+  * **`either`**
+  * **`star`**
+  * **`plus`**
+  * **`seq`**
+  * **`fseq`**
+  * **`nth`**
+  * **`repeat`**
+  * **`choice`**
+  * **`optional`**
+  * **`join`**
+  * **`ignore`**
+  * **`eos`**
+  * **`lazy`**
 
   """
 

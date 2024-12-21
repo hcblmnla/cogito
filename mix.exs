@@ -4,7 +4,7 @@ defmodule Cogito.MixProject do
   def project do
     [
       app: :cogito,
-      version: "0.2.1",
+      version: "0.2.2",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       description: description(),

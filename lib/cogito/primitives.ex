@@ -4,20 +4,20 @@ defmodule Cogito.Primitives do
 
   ## Parsers
 
-  * chars
-  * not_chars
-  * word
-  * space
-  * ws
-  * digit
-  * natural
-  * integer
-  * float
-  * letter
-  * letter_or_digit
-  * identifier
-  * wrapped
-  * iterable
+  * **`chars`**
+  * **`not_chars`**
+  * **`word`**
+  * **`space`**
+  * **`ws`**
+  * **`digit`**
+  * **`natural`**
+  * **`integer`**
+  * **`float`**
+  * **`letter`**
+  * **`letter_or_digit`**
+  * **`identifier`**
+  * **`wrapped`**
+  * **`iterable`**
 
   """
 

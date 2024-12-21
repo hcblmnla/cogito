@@ -22,9 +22,6 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 cogito-*.tar
 
-# Temporary files, for example, from tests.
-/tmp/
-
 # IDEA directory.
 /.idea/
 
@@ -33,9 +30,6 @@ cogito-*.tar
 
 # VS code files.
 /.elixir_ls/
-
-# Playground file.
-/lib/playground.ex
 
 # Lock (mix) file.
 mix.lock
